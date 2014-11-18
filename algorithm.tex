@@ -1,0 +1,250 @@
+{\documentclass[authoryear]{elsarticle}
+
+\setlength\arraycolsep{2pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{multirow}
+\usepackage{comment}
+
+%\usepackage{chicago}
+\bibliographystyle{chicago}
+
+
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\var}{{\rm var}}
+\newcommand{\cov}{{\rm cov}}
+\newcommand{\nid}{{\rm NID}}
+\newcommand{\diag}{{\rm diag}}
+\newcommand{\E}{{\mathrm E}}
+\newcommand{\R}{{\mathrm R}}
+\newcommand{\RD}{{\tilde{\mathrm R}}}
+\newcommand{\Q}{{\mathrm Q}}
+\newcommand{\U}{{\mathrm U}}
+\newcommand{\Ex}{{\cal E}}
+\newcommand{\cor}{\mathrm{cor}}
+\newcommand{\tr}{\mathrm{tr}}
+\newcommand{\e}{\mathrm{e}}
+\newcommand{\de}{\mathrm{d}}
+\newcommand{\p}{\mathrm{P}}
+\newcommand{\Ln}{\mathrm{Ln}}
+\newcommand{\sign}{\mathrm{sign}}
+
+\newcommand{\ra}{\varrho}
+
+\newcommand{\minn}{\mathrm{min}_n}
+\newcommand{\maxn}{\mathrm{max}_n}
+
+
+\newcommand{\cq}{\ ,\quad }
+\newcommand{\qq}{\quad \Rightarrow \quad}
+\newcommand{\oq}{\quad \Leftarrow \quad}
+\newcommand{\eq}{\quad \Leftrightarrow \quad}
+
+
+
+\newcommand{\ppo}[1]{|{#1}|^+}
+
+\newcommand{\ssection}[1]{%
+  \section[#1]{\textbf{\uppercase{#1}}}}
+\newcommand{\ssubsection}[1]{%
+  \subsection[#1]{\normalfont\textbf{#1}}}
+
+
+%\renewcommand{\labelenumi}{(\roman{enumi})}
+
+\newcommand{\eref}[1]{(\ref{#1})}
+\newcommand{\fref}[1]{Gigure \ref{#1}}
+\newcommand{\sref}[1]{\S\ref{#1}}
+\newcommand{\tref}[1]{Table \ref{#1}}
+\newcommand{\aref}[1]{\ref{#1}}
+
+
+
+\newcommand{\bi}{\begin{itemize}}
+\renewcommand{\i}{\item}
+\newcommand{\ei}{\end{itemize}}
+
+
+\begin{document}
+
+
+
+\section{Generating factor copulas given layer dependence}
+
+A copula factor model aims to explain a copula in terms of relatively few components.   A simple example is where $s\sim \chi^2_1$ and $\epsilon\sim N(0,1)$.    Then  $s$ and $s+\sigma\epsilon$ are highly correlated especially if $\sigma$ is small.   Further $s$ and $s+\sigma\epsilon$  will be highly correlated in upper tail but less so in the lower tail.    The reasoning is if $s$ is large then $s+\sigma\epsilon$ is relatively close to $s$  while if $s$ is small then $s$ and $s+\sigma\epsilon$ can be relatively far apart.  Upper tail dependence decreases as  $\sigma$ increases.    The scale $\sigma$ is the noise--to--signal ratio.   
+
+This section describes an algorithm to model and simulate from a copula satisfying a given layer dependence function. The given layer dependence function may be estimated from past data, or incorporate  expert opinion. 
+
+
+A factor copula model for $(y,x)$ is
+\begin{equation}\label{regression}
+ v=G_{s+\epsilon}(s+\epsilon) \cq s= G_s^-(u) \cq u\sim U[0,1]\cq \eps\sim N(0,1) \ ,
+\end{equation}
+where $u$ and $\epsilon$ are independent,  and $G_s$ and $G_{s+\epsilon}$ are   the distributions of $s$ and $s+\epsilon$, respectively.  Since  $u$ and $v$ are uniform, the joint distribution of $(u,v)$ is a copula.    The aim is to find $G_s$ such that the layer dependence between $u$ and $v$ is $\rho_\alpha$ as given  by either theory or  data.  
+
+Regarding equation (1), what you think of expressing $v$ as $G_{s+\epsilon}\{G^-(u)+\epsilon\}$. Then it becomes obvious that $v$ is a "distortion" of $u$ by turning it into a non-uniform, adding noise, and transforming it to uniform again.
+
+The distribution $G_s$  controls layer dependence between $u$ and $v$. Define the volatility of $s$ at $u$ as the derivative 
+$$
+{G_s^-}'(u) =\frac{1}{G_s'\{G_s^-(u)\}}\approx \frac{G_s^-(u+h)-G_s^-(u)}{h}\approx \frac{h}{G_s\{G_s^-(u)+h\}-u} \ .
+$$
+If $s$ has high volatility in the upper tail then $G_s$ dominates $v$ for large values of $u$, yielding strong layer dependence between $u$ and $v$ at high layers. Vice versa for the lower tail. If $x$ has low volatility at all percentiles then $v$ is dominated by noise, resulting in weak dependence. If $x$ is normal then  $(u,v)$ has a Gaussian copula.
+
+To   form a  non--parametric estimate $\hat G_s$ of $G_s$ such that $u$ and $v$  have a target  layer dependence $\rho_\alpha$, $0\le\alpha\le 1$,  choose a large integer $n$  and compute  $\epsilon_i\sim N(0,\sigma^2)$ for $i=1,\ldots,n$.  Initialise $s_1<s_2<\ldots<s_n$  by for example setting them equal to $n$ ordered draws from a standard normal.  Then repeat:
+\begin{enumerate}
+
+\item Compute the ``fitted"  level dependence
+$$
+\hat\rho_{i/n} = \frac{1-2\hat \E(v|u>u_i)}{1-u_i}\cq i=1,2,\ldots,n\ ,
+$$
+where $u_i=i/n$ and $v_i$ are the percentiles of $s_i$ and $s_i+\eps_i$.
+\item  If $\|\rho -  \hat\rho\|$ is ``small" then stop.
+\item Recursively redefine the $s_2,\ldots,s_n$ as 
+\begin{equation}\label{recurse}
+s_{i+1}  \leftarrow s_{i}+  \left(\frac{\rho_{i/n}}{\hat \rho_{i/n}}\right)^a(s_{i+1}-s_i)\cq i=1,\ldots,n-1\cq  a>0\ ,
+\end{equation}
+and  go to 1.
+\end{enumerate}
+
+The shifting of the $s_i$ in the algorithm does not alter their order and in particular percentiles $u_i=i/n$  remain fixed.  What does change is the dominance of the $s_i$ components in $s_i+\eps_i$.  Under large upward shifts the error components become negligible and hence correlation in  tail correlation increases.  
+
+The resulting $(u_i,v_i)$, $i=1,\ldots,n$ has  layer dependence $\hat\rho_\alpha\approx\rho_\alpha$.   If $F_x$ and $F_y$ are the  marginal distributions of $x$ and $y$ then $F_x^-(u_i)$ and $F_y^-(v_i)$  have  marginal distributions  $F_x$ and $F_y$ and   layer dependence $\hat\rho_\alpha\approx\rho_\alpha$.    
+
+Given $v_i$, $i=1,\ldots,n$ and ordered $x_i$ and $y_i$ (in increasing order) the draw $(x_i,y_{nv_i})$ with $i\sim U[1,\ldots,n]$   has  marginal distributions corresponding to the empirical marginals of $x_i$ and $y_i$, and as well as level dependence $\rho_{i/n}$. 
+
+
+
+generated by  randomly selecting $i$ from $1,\ldots n$ and then forming the pair
+
+
+a simple sampling scheme is to order available  $x_i$'s and $y_i's$ in increasing order and randomly draw an  $x$.    If $x_i$ is chosen then $x_i$ is coupled with  $y_{nv_i}$ where for non integer $nv_i$ the subscript is taken to mean linear interpolation between adjacent integers either side.   Repeating this $m$ times leads to an independent sample of $m$ bivariate draws from a bivariate distribution respecting  both the empirical marginals and the given level dependence.
+
+
+
+Thus the algorithm provides a practical method for simulating from a bivariate distribution with specified marginals and specified layer dependence.  Layer dependence is a reasonable copula summary which can be estimated or specified a--priori without resort to the parametric specification of a relatively opaque copula functional form.
+
+The steps in \eref{recurse} serve to ``respace" the $s_i$ with  spacing increased   between points $i$ and $i+1$ if the target level dependence at $\alpha=i/n$ exceeds the current fitted level dependence.  Increasing the space between $s_i$ and $s_{i+1}$ by $\delta$ shifts  $s_{i+1},\ldots s_n$ by $\delta$ without affecting the percentiles of either $s$ or $s+\eps$.   However $s$ becomes a more dominant component of $s+\eps$ for all $s$ percentiles greater than $\alpha=i/n$.
+
+and hence the level dependence is now between  $\delta + s_j$ in $\delta + s_j+\eps_j$ for $j>i$,  increasing level dependence for $\alpha>i/n$.
+
+
+
+Pushing up all $s_j$ for $j>i$  does not affect the percentiles  but increases the dominance of $s_j$ in $s_j+\eps_j$ and hence increases the tail correlation.   
+
+The algorithm works, since if $r=s+\epsilon$ then the layer dependence of $(r,s)$ using the original scale is
+$$
+\frac{\cov\{r,(s>k)\}}{\cov\{r^*,(s>k)\}} = \frac{\cov\{s,(s>k)\}}{\cov\{s,(s>k)\}+\cov\{\epsilon^*,(s>k)\}}
+$$
+where * implies perfect dependence with $s$. For a given $k$, each of the covariance terms in the final expression depends on the volatility of the upper tail. Hence if for example you want to raise layer dependence at $k$, upper tail values need to be more "spaced out." However you wouldn't want to disturb layer dependence values at k+0.01, k+0.02, etc as a result of this adjustment, hence you only "space out" the values of s in the neighbourhood of k. 
+
+
+If $\rho_{i/n}>\hat\rho_{i/n}$, the volatility of $\hat G_s$ at $u_i$  is increased so that the systematic component increases its dominance over the noise component. Vice versa where target layer dependence falls below fitted layer dependence. Thus $\hat G_s$ is iteratively ``re-shaped" according to the gap between target and fitted layer dependence.
+
+A parametric estimate of $G$ is derived by  restricting $G$ to a class of increasing functions depending on say a vector $\theta$ of parameters. Given $\theta$, a $(u,v)$-sample is simulated yielding a fitted layer dependence function $\hat{\rho}_\alpha$. The optimal $G$ is based on the value of $\theta$ minimising the gap between target layer and fitted dependence functions. The gap may be formulated for example as the ``mean square error" $\sum (\rho_\alpha-\hat{\rho}_\alpha)^2$ where the sum applies to a large range of values of $\alpha$ in the unit interval.
+
+Non-parametric $G$ generally achieves superior fit to the target layer dependence function, compared to parametric $G$. In addition the copula model \eref{regression} generally does not permit closed form applications and hence simulation is required. In this case non-parametric $G$ performs equally, if not better, than a parametric $G$.
+
+\section{Alternate approach}
+
+Since
+$$
+\rho_{\alpha} =\frac{2\E(v|u>\alpha)-1}{\alpha}\qquad \iff \qquad \E(v|u>\alpha) = \frac{1+\alpha}{2}\rho_\alpha\ .
+$$
+and suppose $\rho_\alpha$ is given for $\alpha=1-j/n$, $j=1,\ldots,n$.    
+
+Starting at $j=1$ or $\alpha=1-1/n$ define
+$$
+i_n\equiv n\E(v|u>\alpha)  = \left(n-\frac{1}{2}\right)\rho_{1-1/n}\ .
+$$
+which is a number between 0 and $n$.    Next, at $j=2$ or  $\alpha=1-2/n$,
+$$
+n\E(v|u>\alpha) = (n-1)\rho_{1-2/n} = \frac{i_{n-1}+i_{n}}{2}\ ,
+$$ 
+serving to define $i_{n-1}$ given $i_n$ and $\rho_{1-2/n}$.   Hence
+$$
+i_{n-1} \equiv 2(n-1)\rho_{1-2/n} - i_n\ . 
+$$
+Similarly at $j=3$ or $\alpha=1-3/n$
+$$
+n\E(v|u>\alpha) = \left(n-\frac{3}{2}\right)\rho_{1-3/n} = \frac{i_{n-2}+i_{n-1}+i_{n}}{3}\ ,
+$$
+serving to define 
+$$
+i_{n-2} \equiv 3 \left(n-\frac{3}{2}\right)\rho_{1-3/n}-(i_{n-1}+i_n) \ ,
+$$ 
+In general for $j=1,\ldots,n$,
+$$
+i_{n-j+1} = j\left(n-\frac{j}{2}\right)\rho_{1-j/n} - (i_{n-j} + i_{n-j+1}+\cdots + i_{n})\ .
+$$
+The $i_1,\ldots,i_n$ is presumably uniform.   
+
+If  $x_1<x_2<\cdots<x_n$ are the ordered observations on $x$ then 
+$$
+(x_k,y_{i_k})\cq k=1,\ldots, n
+$$
+has level dependence $\rho_\alpha$ as specified.  Further the $x$ marginal distribution is that of the empirical and if has empirical marginal distribution as specified and  if $i_1,\ldots,i_n$ are all distinct  then the $y$ marginal is also preserved.
+
+Above procedure seems to fail.   However if we replace the deterministic choice by a random choice it may be fixed up.
+
+Suppose $u$ denote a vector or uniform random variables with components $u_i$.   We want a vector $v$ that $\E(v_i|u_i>\alpha)=\tau_i$.  Now 
+$$
+\tau_i=\E\{v_i(u_i>\alpha)\}  = \frac{1}{2}+\frac{1}{1-\alpha} \cov\{v_i,(u_i>a)\} 
+$$$$
+= \frac{1}{2}+\frac{\alpha}{2} Pu(i)
+$$
+where $u(i)$ is vector with all zeros except in position $i$.   Hence 
+$$
+Pu(i)= \frac{1}{\alpha} (2\tau -1)\ .
+$$
+Hence column $i$ of $P$ is 
+
+\newcommand{\B}{\mathrm{Beta}}
+The distribution of the $k$th smallest of a sample of size $n$ from the uniform distribution has a beta distribution:
+$$
+v_{(k)}\sim \B(k,n+1-k)\cq \E(v_{(k)}) = \frac{k}{n+1}
+$$
+This suggest, given $n$ and tail expectation, $\tau_\alpha$, $v_\alpha$ is chosen as the $(n+1)\tau_\alpha$ smallest from $n$ independent uniforms.   The  chosen $v_\alpha$ for different $\alpha$ are used to order the $y_i$.    If $x_1<x_2<\cdots<x_n$ are the ordered 
+
+$$
+\E(X) = \E(X|Y=1)\E(Y=1)+\E(X|Y\ne 1)\E(Y\ne 1)
+$$
+Want a recursive down formula
+$$
+\E(v|u>\alpha_j) 
+=\frac{1}{n}\E(v|\alpha_j<u<\alpha_{j+1}) + \left(1-\frac{1}{n}\right)\E(v|u>\alpha_{j+1})
+$$
+implying 
+$$
+\E(v|\alpha_j<u<\alpha_{j+1}) = n\E(v|u>\alpha_j) -(n-1)\E(v|u>\alpha_{j+1})
+$$
+$$
+ = n\tau_j-(n-1)\tau_{j+1} = \tau_{j+1}-n(\tau_{j+1}-\tau_{j})
+ $$
+So pick the kith smallest.
+$$
+v_j\sim n\{\rho_{\alpha_j}-(1-\alpha_{j+1})\rho_{\alpha_{j+1}}, \}
+$$
+
+Existing sampling scheme.   Suppose $x$ and $y$ are $n$--vectors with components $x_i$ and $y_i$. 
+\begin{enumerate}
+\item  Define $u$ with components $u_i=i/(n+1)$, $i=1,\ldots,n$
+\item  Suppose $\ell$ is the level dependence  vector with $\ell_i$ the level dependence at  $u_i$, $i=1,\ldots,n$.
+\item  Corresponding to $\ell$ define upper tail expectation vector $\tau$ with components $\tau_i = (1+u_i\ell_i)/2$.
+\item Compute $\nu_j=\tau_{j}-\tau_{j-1}$
+\item Generate an $w_j\sim U[0,2\nu_j]$, $j=1,\ldots,n$.
+\item\label{beta} Define  $v$ with element $i$ equal to the  $n\tau_i$ largest element of row $i$ of $U$, $i=1,\ldots,n$.
+\item Redefine $v$ as the percentiles of $v$.
+\end{enumerate}
+
+The resulting $(u_i,v_i)$ have empirical copula with level dependence $\ell$.  Further  if $y$ is ordered according to the order of $v$ then 
+$(x_i,y_i)$ has the same marginal distributions and the given level dependence. 
+
+
+Vector $v$ in step \ref{beta} contains independent Beta distributed random variables  with mean vector $\tau$.   
+
+
+
+
+\end{document}

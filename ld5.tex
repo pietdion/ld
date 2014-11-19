@@ -214,7 +214,7 @@ $$
 $$
 \delta_\alpha \equiv\E\left\{(|u-v|)|(u-\alpha)(v-\alpha)<0\right\}  \; .
 $$
-Equation \eref{decomposition} is proved below.  The correlation $-1\leq\gamma_\alpha\leq 1$ measures the tendency for $(u,v)$ to be discordant at $\alpha$: $u-\alpha$ and $v-\alpha$ are of opposite sign. In addition $0\leq \delta_\alpha\leq 1$ measures average dispersion between values of $u$ and $v$ discordant at $\alpha$.
+Equation \eref{decomposition} is proved below.  The correlation $-1\leq\gamma_\alpha\leq 1$ measures the tendency for $(u,v)$ to be discordant at $\alpha$: opposite signs on $u-\alpha$ and $v-\alpha$. In addition $0\leq \delta_\alpha\leq 1$ measures average dispersion between values of $u$ and $v$ discordant at $\alpha$.
 
 Proof of \eref{decomposition} follows from
 $$
@@ -539,13 +539,8 @@ $$
 \ell_\alpha = \frac{\int_0^1 \cov\{(u>\alpha),(v>\beta)\} \de\beta }{\alpha(1-\alpha)/2}
 = \frac{2 \int_0^1 C(\alpha,\beta) \de \beta- \alpha}{\alpha(1-\alpha)} = \frac{2 \int_0^1 C(\beta|\alpha) \de \beta- 1}{1-\alpha}\;.
 $$
-Thus $\ell_\alpha$ scales $C(\beta|\alpha)$ to ensure $\ell_\alpha$ lies between $\pm 1$. The  integral reduces the dimension of the copula from two to one.
-
-For Archimedean copula \citep{mcneil2005qrm}
-$$
-\int_0^1 C(\alpha,\beta) \de \beta = \int_0^1 \psi^-\left\{\psi(\alpha)+\psi(\beta)\right\}\de\beta \;,
-$$
-where $\psi$ is the generator function and $\psi^-$ its inverse. In this cases closed form expressions for $\ell_\alpha$ or $\E(v|u>\alpha)$  do not exist.   This  argues against the use of Archimedean copulas.
+Thus $\ell_\alpha$ scales $C(\beta|\alpha)$ to ensure $\ell_\alpha$ lies between $\pm 1$. The  integral reduces the dimension of the copula from two to one.  With Archimedean copulas \citep{mcneil2005qrm}
+$C(\alpha,\beta) =\psi^-\left\{\psi(\alpha)+\psi(\beta)\right\}$ where $\psi$ is the generator function and $\psi^-$ its inverse. In this case closed form expressions for the integrals and hence $\ell_\alpha$ or $\E(v|u>\alpha)$  do not exist.   This  argues against the use of Archimedean copulas.
 
 \section{Alternatives to Spearman's rho}\label{soverall}
 
@@ -602,7 +597,7 @@ where $x=V_u$. This yields the Gini correlation  \citep{schechtman1999proper}
 $$
 \rho_W=\frac{\cov(V_u,v)}{\cov(V_u,u)} = \frac{\cov\{x,G(y)\}}{\cov\{x,F(x)\}} \;,
 $$
-where $F\equiv V^-$ and $G$ are distribution functions of observed random variables $x$ and $y$, respectively.  In this example
+where $F\equiv V^-$ and $G$ are distribution functions of $x$ and $y$, respectively.  In this example
 weight function depends on the marginal distribution of $V_u$.   More skewed distributions place higher importance on upper tail dependence.
 
 \end{itemize}

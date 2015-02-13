@@ -120,7 +120,7 @@ Layer dependence offers an alternative approach to copula modeling. First comput
 
 
 
-Remaining sections are structured as follows. Section \aref{sintroduction} defines and analyzes layer dependence. Section \aref{sldcurve} demonstrates the appropriateness of layer dependence as a local dependence measure using several copulas. Section \aref{sdecompose} explains the behaviour of layer dependence by decomposing it into a negative function of discordance and dispersion. Section \aref{scoherence} describes coherence properties of layer dependence. Links to existing literature are highlighted in section \aref{sliterature}. Further properties of layer dependence are highlighted in section \aref{sproperties}. Section \aref{smodeling} suggests approaches to simulate a copula given the layer dependence curve, and section \aref{sfitting} applies layer dependence to copula modeling, using historical stock returns as an illustration. Section \aref{saltoverall} discuss alternative coherent measures of overall dependence based on weighted averages of layer dependence. Section \aref{sconclusion} concludes.
+Remaining sections are structured as follows. Section \aref{sintroduction} defines and analyzes layer dependence. Section \aref{sldcurve} demonstrates the appropriateness of layer dependence as a local dependence measure using several copulas. Section \aref{sdecompose} explains the behaviour of layer dependence by decomposing it into a negative function of discordance and dispersion. Section \aref{scoherence} describes coherence properties of layer dependence. Links to existing literature are highlighted in  \sref{sliterature}. Further properties of layer dependence are highlighted in  \sref{sproperties}. Section \aref{smodeling} suggests approaches to simulate a copula given the layer dependence curve, and  \sref{sfitting} applies layer dependence to copula modeling, using historical stock returns as an illustration. Section \aref{saltoverall} discuss alternative coherent measures of overall dependence based on weighted averages of layer dependence. Section \aref{sconclusion} concludes.
 
 
 
@@ -132,27 +132,14 @@ The literature suggests several approaches on fitting a copula to past data. If 
 
 \section{Layer dependence}\label{sintroduction}
 
-Suppose $u$ and $v$ are percentile ranks of continuous random variables $x$ and $y$.  Then $(u,v)$ has standard uniform marginals and its joint distribution $C$ is a copula \citep{nelson1999ic}. Layer dependence is based on the identity
-\begin{equation}\label{decompose}
-u= \int_0^1 (\alpha\le u)\de\alpha\ ,
-\end{equation}
-where $(\alpha\le u) \de \alpha$ is the ``$\alpha$--layer'' of $u$ and $(\alpha\le u)$ is the indicator function of the event in brackets.   To prove \eref{decompose} note the left hand side $u=\int_0^u 1\de \alpha$ which equals the right hand side.
+Suppose $u$ and $v$ are percentile ranks of continuous random variables $x$ and $y$.  Then $(u,v)$ has standard uniform marginals and its joint distribution $C$ is a copula \citep{nelson1999ic}. 
 
-
-Informally, the derivative of  $(\alpha\le u) \de \alpha$ with respect to $u$ is $\infty\de\alpha=1$ when $u=\alpha$ and $0$ otherwise. Thus the $\alpha$--layer captures movements in $u$ solely at $\alpha$, and ignores movements elsewhere. Thus \eref{decompose} shows $u$ is formed from infinitely many $\alpha$--layers, with each layer capturing the variability of $u$ at a different $\alpha$.
-
-Taking expectations of \eref{decompose} yields the familiar result expressing expectation as the integral of the survival function.
-$$
-\E(u) = \int_0^1 (1-\alpha)\de \alpha\ .
-$$
-
-
-The $\alpha$--layer dependence  between $v$ and the $\alpha$--layer of $u$ is defined in terms of covariance:
+The $\alpha$--layer dependence  between $v$ and the $\alpha$--layer of $u$ is
 \begin{equation}\label{definition}
 \ell_\alpha \equiv \frac{\cov\{v,(u>\alpha)\}}{\cov\{u,(u>\alpha)\}}
 =\frac{\cor\{v,(u>\alpha)\}}{\cor\{u,(u>\alpha)\}} \cq 0\leq\alpha\leq 1\;,
 \end{equation}
-where cov and cor calculate covariance and correlation, respectively. The denominators in \eref{definition} are independent of the copula $C$ and implies $\ell_\alpha=1$ if $u=v$ and $\ell_\alpha=-1$ if $u=1-v$.  Further $-1\leq \ell_\alpha \leq 1$. Independence implies $\ell_\alpha=0$. Coherence properties of $\ell_\alpha$ are formalised in section \aref{scoherence}.
+where cov and cor calculate covariance and correlation, respectively, and $(\alpha\le u)$ is the indicator function of the event in brackets. The denominators in \eref{definition} are independent of $C$ and implies $\ell_\alpha=1$ if $u=v$ and $\ell_\alpha=-1$ if $u=1-v$.  Further $-1\leq \ell_\alpha \leq 1$. Independence implies $\ell_\alpha=0$. Coherence properties of $\ell_\alpha$ are explored in \sref{scoherence}.
 
 Expanding the covariances  in \eref{definition} and manipulating yields
 \begin{equation}\label{gapexp}
@@ -161,8 +148,14 @@ Expanding the covariances  in \eref{definition} and manipulating yields
 \end{equation}
 where $\E$ calculates expectations using $C$. The middle expression in \eref{gapexp} is the expected change in $v$ relative to the expected change in $u$ when $u$ crosses $\alpha$. The latter is $0.5$ for all $\alpha$, yielding the final expression in \eref{gapexp}. Hence large $\ell_\alpha$ implies $v$ is sensitive to movements in $u$ across $\alpha$, indicating strong dependence between $v$ and $u$ at $\alpha$. When $\ell_\alpha=0$, $v$ is unchanged on average when $u$ crosses $\alpha$, and $u$ and $v$ are independent at $\alpha$.
 
+Layer intimately connected to the identity
+\begin{equation}\label{decompose}
+u= \int_0^1 (\alpha\le u)\de\alpha\ .
+\end{equation}
+ To prove \eref{decompose} note the left hand side is $\int_0^u 1\de \alpha$ equaling the right hand side.  Informally, the derivative of the  ``$\alpha$--layer'' of $u$,  $(\alpha\le u) \de \alpha$ with respect to $u$ is $\infty\de\alpha=1$ when $u=\alpha$ and $0$ otherwise. Thus the $\alpha$--layer captures movements in $u$ solely at $\alpha$, and ignores movements elsewhere. Thus \eref{decompose} shows $u$ is formed from infinitely many $\alpha$--layers, with each layer capturing the variability of $u$ at a different $\alpha$.  Taking expectations of \eref{decompose} yields the familiar result expressing expectation as the integral of the survival function.
 
-Using \eref{decompose} and \eref{definition}, Spearman's correlation between $u$ and $v$ is
+
+Using  \eref{definition} and \eref{decompose}, Spearman's correlation between $u$ and $v$ is
 \begin{equation}\label{wtdaverage}
 \rho_S\equiv \cor(u,v) =\frac{\cov(u,v)}{\var(u)}=\frac{\int _0^1\cov\{v,(u>\alpha)\}\de\alpha}{1/12}
 =\Ex(\ell_\alpha)\; .
@@ -457,7 +450,7 @@ Hence first order conditional expectations are a weighted average of correspondi
 
 
 
-\section{Layer dependence and measure of tail behaviour}\label{sliterature}
+\section{Layer dependence and measures of tail behaviour}\label{sliterature}
 
 Measures have been proposed in the literature to capture the degree of tail dependence.   The next two subsections describe the connection of these measures to layer dependence.
 
@@ -571,14 +564,14 @@ With Archimedean copulas \citep{mcneil2005qrm} $C(\alpha,\beta) =\psi^-\left\{\p
 The following are two approaches to simulate a copula given layer dependence $\ell_\alpha$ for all $0\leq\alpha\leq 1$. The copula is not unique to $\ell_\alpha$ since $\ell_\alpha$, from \eref{gapexp}, relates to first-order conditional expectations rather than the entire conditional distribution associated with the copula.
 
 
-\subsection{Factor model}
+\subsection{Factor copula model}
 
-Suppose $s$ is generated from some distribution and
+Suppose $s$ is a random variable and
 $$
 u=F(s+\eps) \cq
 v=F(s+\eta)    \cq \eps, \eta \sim N(0,1) \ ,
 $$
-where $s$, $\eps$ and $\eta$ are independent and $F$ denotes the generic distribution of the random variables in the brackets. Then both $u$ and $v$ are uniform and the joint distribution of $(u,v)$ is exchangeable. The common factor $s$ generates and controls layer dependence between $u$ and $v$. For example if $s$ is highly volatile and right skewed relative to noise terms $\eps$, $\eta$, then $u$ and $v$ are more dependent particularly in the upper tail.
+where $s$, $\eps$ and $\eta$ are independent and $F$ is the  distribution of the random variables in the brackets. Then both $u$ and $v$ are uniform and the joint distribution of $(u,v)$ is exchangeable. The common factor $s$ generates and controls layer dependence between $u$ and $v$. For example if $s$ is highly volatile and right skewed relative to noise terms $\eps$, $\eta$, then $u$ and $v$ are more dependent particularly in the upper tail.
 
 The factor copula model generates positive layer dependence. Negative layer dependence is created by first simulating the corresponding positive layer dependence, and then taking complements of either percentile rank.
 
